@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  wrapper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      LOG_LEVEL: info
+      BOLEK_API_TOKEN: test_token_for_dev
+      LIBRECHAT_URL: http://librechat:3090
+      WRAPPER_PORT: 3000
+    depends_on:
+      - librechat
+    networks:
+      - bolek
+    command: npm run dev
+
+  librechat:
+    build:
+      context: ..
+    ports:
+      - "3090:3090"
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://mongo:27017/librechat
+    depends_on:
+      - mongo
+    networks:
+      - bolek
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - bolek
+
+networks:
+  bolek:
+    driver: bridge
+
+volumes:
+  mongo_data:
