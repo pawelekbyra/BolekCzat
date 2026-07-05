@@ -1,6 +1,7 @@
 # Agent Bolek LibreChat template.
-# Copy to librechat.yaml or set CONFIG_PATH=./librechat.bolek.yaml when the kulfon
+# Copy to librechat.yaml or set CONFIG_PATH=./librechat.bolek.yaml when the BolekAI
 # OpenAI-compatible adapter is ready. Secrets must come from environment variables.
+# The current Worker URL may still use the legacy kulfon hostname until renamed.
 version: 1.3.13
 cache: true
 
@@ -49,7 +50,7 @@ modelSpecs:
   list:
     - name: 'agent-bolek'
       label: 'Agent Bolek'
-      description: 'Osobisty agent Pawła przez kulfon OpenAI-compatible adapter.'
+      description: 'Osobisty agent Pawła przez BolekAI OpenAI-compatible adapter.'
       default: true
       preset:
         endpoint: 'Agent Bolek'
