@@ -22,25 +22,25 @@
 
 ---
 
-## 🔄 In Progress (Phase 1B — API Integration)
+## ✅ Completed (Phase 1B — API Integration)
 
-- [ ] **HTTP client for BolekAI**
-  - [ ] Implement POST /api/agent/message
-  - [ ] Implement GET /api/agent/conversations
-  - [ ] Add error handling (service down, timeout)
-  - [ ] Add retry logic
+- [x] **HTTP client for BolekAI**
+  - [x] Implement POST /api/agent/message
+  - [x] Implement GET /api/agent/conversations
+  - [x] Add error handling (service down, timeout)
+  - [x] Add retry logic
+  - [x] BolekCzat wrapper complete with Hono server
+  - [x] LibreChatAdapter with message translation
+  - [x] Docker Compose for wrapper + LibreChat
 
-- [ ] **Display agent metadata**
-  - [ ] Show token count
-  - [ ] Show tools used
-  - [ ] Show execution time
-  - [ ] Show approval requests (if any)
-
-- [ ] **Conversation management**
-  - [ ] Fetch conversation history
-  - [ ] List past conversations
-  - [ ] Create new conversation
-  - [ ] Delete conversation
+- [x] **Wrapper Infrastructure**
+  - [x] TypeScript setup (tsconfig, package.json)
+  - [x] Logger with JSON output
+  - [x] Adapter pattern for API translation
+  - [x] Unit tests for adapter
+  - [x] Health endpoint and Bearer token auth
+  - [x] Environment configuration template
+  - [x] Documentation (README, WRAPPER-SETUP.md)
 
 ---
 
