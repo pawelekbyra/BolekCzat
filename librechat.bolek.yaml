@@ -1,0 +1,56 @@
+# Agent Bolek LibreChat template.
+# Copy to librechat.yaml or set CONFIG_PATH=./librechat.bolek.yaml when the kulfon
+# OpenAI-compatible adapter is ready. Secrets must come from environment variables.
+version: 1.3.13
+cache: true
+
+interface:
+  customWelcome: 'Osobisty agent Pawła. Pamięta, pomaga, monitoruje Polutka i działa przez narzędzia po potwierdzeniu.'
+  modelSelect: false
+  parameters: false
+  presets: false
+  prompts:
+    use: true
+    create: true
+    share: false
+    public: false
+  bookmarks: true
+  multiConvo: true
+  agents:
+    use: false
+    create: false
+    share: false
+    public: false
+  marketplace:
+    use: false
+  fileCitations: true
+
+registration:
+  socialLogins: []
+
+endpoints:
+  custom:
+    - name: 'Agent Bolek'
+      apiKey: '${BOLEK_OPENAI_ADAPTER_KEY}'
+      baseURL: '${BOLEK_API_BASE_URL}'
+      models:
+        default:
+          - '${BOLEK_MODEL}'
+        fetch: false
+      titleConvo: true
+      titleModel: '${BOLEK_MODEL}'
+      summarize: false
+      summaryModel: '${BOLEK_MODEL}'
+      modelDisplayLabel: 'Agent Bolek'
+
+modelSpecs:
+  enforce: true
+  prioritize: true
+  list:
+    - name: 'agent-bolek'
+      label: 'Agent Bolek'
+      description: 'Osobisty agent Pawła przez kulfon OpenAI-compatible adapter.'
+      default: true
+      preset:
+        endpoint: 'Agent Bolek'
+        model: '${BOLEK_MODEL}'
