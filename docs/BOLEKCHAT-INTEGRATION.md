@@ -2,37 +2,49 @@
 
 BolekCzat is the LibreChat fork that will serve as the web chat UI for Agent Bolek. It should stay close to upstream LibreChat so future upstream updates remain easy to merge.
 
+---
+
 ## Architecture
 
 ```txt
 BolekCzat / LibreChat
   ↓
-kulfon / Agent Bolek brain
+BolekAI / Agent Bolek brain
   ↓
 Bolek tools, memory, Telegram, Polutek ops
 ```
 
+`BolekAI` is the repository/backend identity. The current deployed Cloudflare Worker URL may still use the legacy `kulfon.pawel-perfect.workers.dev` hostname until the deployment is renamed.
+
+---
+
 ## Repository relationships
 
 - `pawelekbyra/BolekCzat` is the LibreChat-based web UI.
-- `pawelekbyra/kulfon` is the Agent Bolek brain and future OpenAI-compatible adapter host.
-- `BolekDev` remains the broader development/operator context. BolekCzat should not absorb backend, tool, or operations logic from it.
+- `pawelekbyra/BolekAI` is the Agent Bolek brain/backend and OpenAI-compatible adapter host.
+- `pawelekbyra/BolekDev` is the future coding executor.
+- `pawelekbyra/BolekKB` is the future knowledge base / RAG layer.
+- `pawelekbyra/BolekFlow` is the future workflow automation layer.
 
-LibreChat is only the UI layer. It should render chats, send messages to the adapter, and display responses. Agent behavior, memory, tool execution, Telegram integrations, Polutek operations, and action confirmation rules belong behind `kulfon`.
+LibreChat is only the UI layer. It should render chats, send messages to the adapter, and display responses. Agent behavior, memory, tool execution, Telegram integrations, Polutek operations, and action confirmation rules belong behind `BolekAI`.
 
-## Future Bolek endpoint
+---
 
-The future adapter endpoint is expected to expose OpenAI-compatible chat completions:
+## Bolek endpoint
+
+The BolekAI adapter exposes an OpenAI-compatible chat completions endpoint:
 
 ```txt
 POST https://kulfon.pawel-perfect.workers.dev/v1/chat/completions
 ```
 
-The base URL used by LibreChat is:
+The base URL used by LibreChat is currently:
 
 ```txt
 https://kulfon.pawel-perfect.workers.dev/v1
 ```
+
+If the Cloudflare Worker route is renamed later, update only `BOLEK_API_BASE_URL`; the LibreChat configuration shape should stay the same.
 
 The initial model name is:
 
@@ -40,12 +52,16 @@ The initial model name is:
 bolek
 ```
 
+---
+
 ## Configuration files added in this fork
 
 - `librechat.bolek.yaml` is an opt-in LibreChat configuration template for Agent Bolek.
 - `.env.bolek.example` is an opt-in environment overlay for the Bolek endpoint.
 
 This is intentionally not wired into production by default. If `CONFIG_PATH` is not changed, normal LibreChat defaults still apply.
+
+---
 
 ## Required environment variables
 
@@ -58,6 +74,8 @@ BOLEK_MODEL=bolek
 ```
 
 `BOLEK_OPENAI_ADAPTER_KEY` must be replaced with the adapter key only in local or deployment environment storage. Do not commit the real value.
+
+---
 
 ## Endpoint shape
 
@@ -80,6 +98,10 @@ endpoints:
 
 The template also defines a default model spec pointing at endpoint `Agent Bolek` and model `${BOLEK_MODEL}`.
 
+`fetch: false` is intentional. BolekCzat does not require BolekAI to expose `/v1/models` for the first integration milestone.
+
+---
+
 ## Local Docker setup
 
 1. Copy the standard LibreChat env file:
@@ -89,7 +111,7 @@ The template also defines a default model spec pointing at endpoint `Agent Bolek
    ```
 
 2. Copy the Agent Bolek values from `.env.bolek.example` into `.env`.
-3. Replace `BOLEK_OPENAI_ADAPTER_KEY=replace-me` only when the `kulfon` adapter is deployed and ready.
+3. Replace `BOLEK_OPENAI_ADAPTER_KEY=replace-me` only when the `BolekAI` adapter is deployed and ready.
 4. Start local Docker:
 
    ```bash
@@ -97,6 +119,8 @@ The template also defines a default model spec pointing at endpoint `Agent Bolek
    ```
 
 For the deployed compose stack, ensure `librechat.bolek.yaml` is copied or mounted as `librechat.yaml`, or set `CONFIG_PATH` to the mounted path.
+
+---
 
 ## Production setup
 
@@ -112,7 +136,9 @@ BOLEK_OPENAI_ADAPTER_KEY=<secret-from-platform>
 BOLEK_MODEL=bolek
 ```
 
-Mount or copy `librechat.bolek.yaml` as the active LibreChat config. The adapter must be reachable from the LibreChat server container/process.
+Mount or copy `librechat.bolek.yaml` as the active LibreChat config. The BolekAI adapter must be reachable from the LibreChat server container/process.
+
+---
 
 ## Deployment options
 
@@ -136,14 +162,30 @@ Use a Docker Web Service or equivalent container deployment. Configure MongoDB/p
 
 Use `deploy-compose.yml` or a lightly customized compose file on the VPS. Store real secrets in `.env` on the server only. For the deployed compose template, either copy `librechat.bolek.yaml` to `librechat.yaml` before startup or adjust the bind mount/config path.
 
+---
+
 ## Security boundaries
 
 - BolekCzat must not receive direct Stripe, Clerk, Vercel, Resend, Polutek, GitHub, or other operational secrets.
 - BolekCzat must not bypass Bolek's action confirmation gate.
-- BolekCzat talks only to `kulfon`'s OpenAI-compatible adapter for Bolek behavior.
-- Tool execution, memory writes, Telegram actions, Polutek operations, and sensitive integrations must remain behind `kulfon`.
+- BolekCzat talks only to `BolekAI`'s OpenAI-compatible adapter for Bolek behavior.
+- Tool execution, memory writes, Telegram actions, Polutek operations, and sensitive integrations must remain behind `BolekAI`.
 - The only Bolek-specific secret expected in BolekCzat is the adapter key: `BOLEK_OPENAI_ADAPTER_KEY`.
 
-## Current blocker
+---
 
-Chatting with Agent Bolek remains blocked until `kulfon` exposes the OpenAI-compatible `/v1/chat/completions` endpoint and accepts `BOLEK_OPENAI_ADAPTER_KEY`.
+## Current status
+
+BolekCzat is configured as an opt-in LibreChat UI for Agent Bolek. Chatting through this UI requires a deployed BolekAI `/v1/chat/completions` adapter and a valid `BOLEK_OPENAI_ADAPTER_KEY`.
+
+---
+
+## Network map
+
+```txt
+BolekCzat  → web UI / LibreChat
+BolekAI    → brain/backend/tools/memory/approval gate
+BolekDev   → future coding executor
+BolekKB    → future knowledge base / RAG
+BolekFlow  → future workflow automation
+```
